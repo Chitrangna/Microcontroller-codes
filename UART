@@ -1,0 +1,47 @@
+//ATMEGA 32A
+/*
+ * uart.c
+ *
+ * Created: 30-Jul-17 1:35:42 PM
+ * Author : Chitrangna
+ */ 
+
+#include <avr/io.h>
+#define F_CPU 14745600UL                    //clock frequency
+#include<util/delay.h>
+#define BAUD 9600                            //9600 bps
+#define BAUDRATE (F_CPU/(16UL*BAUD)-1)       //counts per bit. i.e., number of counts to wait for before reading bit
+
+void init(void){                                   //function for initializing uart
+	UBRRH= BAUDRATE>>8;                            //setting baud rate (the start value for the counter.)
+	UBRRL= BAUDRATE;
+	UCSRB|= 1<<RXEN|1<<TXEN|1<<RXCIE;                                      //enabling the rx tx ports
+	UCSRC|= 1<<URSEL|1<<UCSZ0|1<<UCSZ1;         //8-bit data, 1 stop bit
+}
+
+void transmit(unsigned char c){                  //function to transmit
+	while(!(UCSRA&1<<UDRE));
+	UDR=c;
+}
+
+unsigned char receive(void){                       //function to return the received value from receive buffer
+	
+	while(!(UCSRA&1<<RXC));
+	return UDR;
+	
+}
+	unsigned char a;
+
+int main(void)
+{
+	init();
+	while (1) {
+		a=receive();
+		transmit(a);
+		_delay_ms(100);
+	}
+	
+	return 0;
+}
+
+	
