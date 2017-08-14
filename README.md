@@ -1,2 +1,2 @@
 # Microcontroller-codes
-I2c, SPI, UART
+I2c, UART
